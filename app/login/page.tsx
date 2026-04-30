@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '@/app/config.js';
 
@@ -9,7 +9,8 @@ interface Country {
   name: string;
 }
 
-export default function LoginPage() {
+// 1. محتوى الصفحة الحقيقي (تم نقله هنا)
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -109,29 +110,16 @@ export default function LoginPage() {
           router.push('/');
           
         } else {
-          // --- التعديل الذكي لمعالجة الأخطاء ---
           let errorMessage = 'Login failed. Please check your email or password.';
           
           try {
-            // نحاول قراءة محتوى الخطأ من السيرفر
             const errorData = await response.json();
-            
-            // إذا كان الرد يحتوي على حقل message
-            if (errorData.message) {
-              errorMessage = errorData.message;
-            } 
-            // إذا كان الرد مجرد نص عادي
-            else if (typeof errorData === 'string') {
-              errorMessage = errorData;
-            }
+            if (errorData.message) errorMessage = errorData.message;
+            else if (typeof errorData === 'string') errorMessage = errorData;
           } catch (e) {
-            // في حال فشل قراءة الـ JSON (نادر)، نستخدم الرسالة العامة
             console.error("Error parsing error response:", e);
           }
-          
-          // عرض الرسالة الحقيقية في الصفحة
           setError(errorMessage);
-          // -----------------------------------
         }
       } else {
         const payload: any = { 
@@ -152,7 +140,6 @@ export default function LoginPage() {
         });
 
         if (response.ok) {
-          // نجاح التسجيل: ننتقل لوضع تسجيل الدخول
           setIsLoginMode(true);
           setError(''); 
         } else {
@@ -168,7 +155,6 @@ export default function LoginPage() {
         }
       }
     } catch (err) {
-      // في حال انقطاع الاتصال الحقيقي (Network Error)
       setError('An error occurred. Please check your connection and try again.');
     } finally {
       setLoading(false);
@@ -182,7 +168,6 @@ export default function LoginPage() {
           {isLoginMode ? 'Welcome Back' : 'Create Account'}
         </h2>
         
-        {/* صندوق الخطأ يظهر فقط عند وجود خطأ */}
         {error && <div style={styles.error}>{error}</div>}
 
         <form onSubmit={handleSubmit} style={styles.form}>
@@ -334,6 +319,15 @@ export default function LoginPage() {
   );
 }
 
+// 2. التصدير الرئيسي مع إضافة Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div style={styles.loading}>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
 const styles = {
   container: {
     minHeight: '100vh',
@@ -456,4 +450,9 @@ const styles = {
   instagramBtn: {
     backgroundColor: '#C13584',
   },
+  loading: {
+    color: '#fff',
+    textAlign: 'center' as const,
+    marginTop: '20px',
+  }
 };
