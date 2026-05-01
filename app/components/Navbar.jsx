@@ -23,7 +23,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -36,7 +36,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const newStars = Array.from({ length: 80 }).map(() => {
+    const newStars = Array.from({ length: 60 }).map(() => {
       const depth = Math.random();
       return {
         top: Math.random() * 100,
@@ -65,7 +65,7 @@ const Navbar = () => {
   };
 
   const cartItemCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-  const cartScale = cartItemCount > 0 ? 1 + (Math.min(cartItemCount, 20) / 40) : 1;
+  const cartScale = cartItemCount > 0 ?1 + (Math.min(cartItemCount, 20) / 40) :1;
 
   const handleNavigation = (path) => {
     router.push(path);
@@ -98,7 +98,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* النيزك الطائر (الجديد) */}
+        {/* النيزك الطائر */}
         <div className="meteor-shooting">
              <div className="meteor-head"></div>
              <div className="meteor-tail"></div>
@@ -109,15 +109,32 @@ const Navbar = () => {
           <span className="logo-text">OUTCOLONY</span>
         </div>
 
-        {/* القائمة الجانبية للموبايل */}
+        {/* القائمة المنبثقة + قسم المصادقة في الموبايل */}
         <div className={`links ${isMenuOpen ? 'active' : ''}`}>
           <a onClick={() => handleNavigation('/')} className="nav-link">Home</a>
           <a onClick={() => handleNavigation('/about')} className="nav-link">About</a>
           <a onClick={() => handleNavigation('/contact')} className="nav-link">Contact</a>
+
+          {/* قسم المصادقة للموبايل فقط (يظهر داخل القائمة) */}
+          <div className="mobile-only-auth">
+            {!user ? (
+              <button onClick={() => handleNavigation('/login')} className="mobile-signin-btn">
+                Sign In
+              </button>
+            ) : (
+              <div className="mobile-user-section">
+                <div className="mobile-user-name">{user.name}</div>
+                <div onClick={handleLogout} className="mobile-logout-btn">
+                  Sign Out
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="actions-container">
 
+          {/* قسم المصادقة للسطح المكتب فقط */}
           <div className="desktop-only-auth">
             {!user ? (
               <button onClick={() => router.push('/login?redirect=/')} className="btn-signin">
@@ -165,9 +182,9 @@ const Navbar = () => {
         }
 
         .navbar {
-          position: sticky;
+          position: sticky; /* ثابت دائماً */
           top: 0;
-          z-index: 1000;
+          z-index: 10000; /* رقم عالي جداً لضمان عدم الاختفاء */
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -185,10 +202,13 @@ const Navbar = () => {
           transition: all 0.5s ease;
         }
 
+        /* حالة السكرول: شفافية أكثر لتبين ما خلفها */
         .navbar.scrolled {
-          background: rgba(5, 5, 8, 0.95);
-          border-bottom: 1px solid rgba(255,165,0,0.2);
-          box-shadow: 0 0 20px rgba(255, 165, 0, 0.1);
+          background: rgba(5, 5, 8, 0.6); /* شفافية أكبر (أقل عتمة) */
+          backdrop-filter: blur(15px);
+          border-bottom: 1px solid rgba(255,165,0,0.1);
+          box-shadow: 0 0 20px rgba(255, 165, 0, 0.05);
+          padding: 10px 20px; /* تصغير الارتفاع قليلاً */
         }
 
         .navbar.loaded {
@@ -217,7 +237,7 @@ const Navbar = () => {
           100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
         }
 
-        /* === النيزك الطائر === */
+        /* === النيزك === */
         .meteor-shooting {
             position: absolute;
             top: 0;
@@ -232,13 +252,13 @@ const Navbar = () => {
         .meteor-head {
             position: absolute;
             top: 50%;
-            left: -50px; /* يبدأ من خارج الشاشة */
+            left: -50px;
             width: 4px;
             height: 4px;
             background: #fff;
             border-radius: 50%;
             box-shadow: 0 0 15px 5px #fff, 0 0 30px 10px orange;
-            animation: shootMeteor 2s linear infinite; /* كل ثانيتين */
+            animation: shootMeteor 2s linear infinite;
         }
 
         .meteor-tail {
@@ -259,7 +279,7 @@ const Navbar = () => {
                 opacity: 1;
             }
             100% {
-                left: 120%; /* يطير لطرف الشاشة */
+                left: 120%;
                 opacity: 1;
             }
         }
@@ -271,6 +291,7 @@ const Navbar = () => {
           cursor: pointer;
           position: relative;
           z-index: 20;
+          flex-shrink: 0; /* لمنع اللوجو من الانضغاط */
         }
 
         .logo-img {
@@ -292,7 +313,7 @@ const Navbar = () => {
           text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
-        /* === الروابط والقائمة === */
+        /* === روابط سطح المكتب === */
         .links {
           display: flex;
           gap: 40px;
@@ -337,7 +358,7 @@ const Navbar = () => {
           display: flex;
           gap: 25px;
           align-items: center;
-          z-index: 1100; /* فوق القائمة */
+          z-index: 1100;
         }
 
         .btn-signin {
@@ -363,6 +384,7 @@ const Navbar = () => {
           filter: brightness(1.2);
         }
 
+        /* قائمة المستخدم سطح المكتب */
         .user-dropdown-wrapper {
           position: relative;
         }
@@ -451,99 +473,115 @@ const Navbar = () => {
            background: rgba(255, 107, 107, 0.1);
         }
 
-        .cart-icon-wrapper {
-          position: relative;
-          display: inline-flex; 
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .cart-emoji {
-          font-size: 1.8rem;
-          line-height: 1;
-          filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
-        }
-
-        .cart-badge {
-          position: absolute;
-          top: -6px; 
-          right: -10px; 
-          background: #f97316;
-          color: #fff;
-          font-size: 0.7rem;
-          font-weight: bold;
-          border-radius: 50%;
-          width: 22px;
-          height: 22px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
-          z-index: 20; 
-          border: 2px solid #050508; 
-        }
-
-        .hamburger {
-          display: none;
-        }
-
-        /* === الموبايل: قائمة حديثة وعناصر واضحة === */
+        /* === الموبايل: إصلاحات ذكية === */
         @media (max-width: 900px) {
           .navbar {
-            padding: 15px 20px;
+            padding: 10px 15px; /* مسافة أصغر */
           }
 
           .logo-img {
-            height: 40px;
+            height: 35px; /* تصغير اللوجو */
+          }
+
+          .logo-text {
+            font-size: 1rem; /* تصغير النص */
+            display: none; /* إخفاء النص في الشاشات الصغيرة جداً لترك مساحة للسلة */
+          }
+
+          /* إظهار النص إذا كان هناك مساحة كافية */
+          @media (min-width: 400px) {
+            .logo-text { display: block; }
           }
 
           .links {
             position: fixed;
             right: -100%;
             top: 0;
-            width: 100%; /* تغطية الشاشة كاملة */
+            width: 85%;
             height: 100vh;
             
-            /* تصميم حديث */
-            background: rgba(5, 5, 8, 0.98); /* لون داكن صلب لضمان قراءة النص */
+            background: rgba(5, 5, 8, 0.98);
             backdrop-filter: blur(25px);
             
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
 
             transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-            z-index: 1050; /* فوق النافبار الأساسي */
-            border-right: none;
+            z-index: 1050;
+            border-left: 1px solid rgba(255,255,255,0.1);
           }
 
           .links.active {
             right: 0;
-            box-shadow: -10px 0 50px rgba(0,0,0,0.8);
+            box-shadow: -10px 0 50px rgba(0,0,0,0.9);
           }
 
-          /* روابط حديثة وكبيرة */
           .nav-link {
-            font-size: 2.5rem; /* خط كبير جداً (Modern) */
+            font-size: 2rem;
             font-weight: 800;
             color: #fff;
-            letter-spacing: 2px;
             text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
           }
 
           .nav-link:hover {
             color: #f97316;
             transform: scale(1.1);
-            text-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
           }
 
-          .nav-link::after {
-            display: none; /* إخفاء الخط السفلي في الموبايل */
+          /* تصميم زر الدخول داخل القائمة */
+          .mobile-only-auth {
+            display: flex; /* ظهر فقط في الموبايل */
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+          }
+
+          .mobile-signin-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+          }
+
+          .mobile-user-section {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+          }
+
+          .mobile-user-name {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 10px;
+          }
+
+          .mobile-logout-btn {
+            color: #ff6b6b;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 1px solid #ff6b6b;
+            padding: 10px 30px;
+            border-radius: 8px;
+          }
+
+          /* إخفاء المصادقة سطح المكتب في الموبايل */
+          .desktop-only-auth {
+            display: none !important;
+          }
+
+          .actions-container {
+            gap: 15px;
+            margin-left: auto; /* دفع العناصر لليمين */
           }
 
           .hamburger {
@@ -551,43 +589,16 @@ const Navbar = () => {
             flex-direction: column;
             gap: 6px;
             cursor: pointer;
-            z-index: 1150; /* فوق القائمة */
-            padding: 10px;
+            z-index: 1150;
+            padding: 5px;
           }
 
           .line {
-            width: 30px;
+            width: 25px;
             height: 3px;
             background: #fff;
             transition: all 0.3s;
             border-radius: 2px;
-          }
-
-          .line1 { transform: rotate(0deg); }
-          .line2 { opacity: 1; }
-          .line3 { transform: rotate(0deg); }
-
-          .line1.line1 { transform: rotate(45deg) translate(5px, 6px); }
-          .line2.line2 { opacity: 0; }
-          .line3.line3 { transform: rotate(-45deg) translate(5px, -6px); }
-
-          .actions-container {
-            gap: 15px;
-          }
-
-          .btn-signin {
-            display: none; /* إخفاء زر الدخول في الهيدر، سنظهره في القائمة لو أردت، لكن هنا نخفيه لجعل القائمة نظيفة */
-          }
-          
-          .user-name {
-            display: none; /* إخفاء الاسم في الهيدر لعدم الازدحام */
-          }
-
-          .desktop-only-auth {
-             position: fixed;
-             top: 20px;
-             right: 20px;
-             z-index: 1150;
           }
         }
       `}</style>
