@@ -17,7 +17,7 @@ const Navbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100);
+    const timer = setTimeout(() => setIsLoaded(true),100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -115,7 +115,7 @@ const Navbar = () => {
           <a onClick={() => handleNavigation('/about')} className="nav-link">About</a>
           <a onClick={() => handleNavigation('/contact')} className="nav-link">Contact</a>
 
-          {/* قسم المصادقة للموبايل فقط (يظهر داخل القائمة) */}
+          {/* قسم المصادقة للموبايل فقط (مخفي في سطح المكتب) */}
           <div className="mobile-only-auth">
             {!user ? (
               <button onClick={() => handleNavigation('/login')} className="mobile-signin-btn">
@@ -182,9 +182,9 @@ const Navbar = () => {
         }
 
         .navbar {
-          position: sticky; /* ثابت دائماً */
+          position: sticky;
           top: 0;
-          z-index: 10000; /* رقم عالي جداً لضمان عدم الاختفاء */
+          z-index: 10000;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -202,13 +202,12 @@ const Navbar = () => {
           transition: all 0.5s ease;
         }
 
-        /* حالة السكرول: شفافية أكثر لتبين ما خلفها */
         .navbar.scrolled {
-          background: rgba(5, 5, 8, 0.6); /* شفافية أكبر (أقل عتمة) */
+          background: rgba(5, 5, 8, 0.6);
           backdrop-filter: blur(15px);
           border-bottom: 1px solid rgba(255,165,0,0.1);
           box-shadow: 0 0 20px rgba(255, 165, 0, 0.05);
-          padding: 10px 20px; /* تصغير الارتفاع قليلاً */
+          padding: 10px 20px;
         }
 
         .navbar.loaded {
@@ -291,7 +290,7 @@ const Navbar = () => {
           cursor: pointer;
           position: relative;
           z-index: 20;
-          flex-shrink: 0; /* لمنع اللوجو من الانضغاط */
+          flex-shrink: 0;
         }
 
         .logo-img {
@@ -317,6 +316,11 @@ const Navbar = () => {
         .links {
           display: flex;
           gap: 40px;
+        }
+
+        /* إخفاء قسم المصادقة الخاص بالموبايل على سطح المكتب */
+        .mobile-only-auth {
+            display: none;
         }
 
         .nav-link {
@@ -473,22 +477,59 @@ const Navbar = () => {
            background: rgba(255, 107, 107, 0.1);
         }
 
-        /* === الموبايل: إصلاحات ذكية === */
+        .cart-icon-wrapper {
+          position: relative;
+          display: inline-flex; 
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cart-emoji {
+          font-size: 1.8rem;
+          line-height: 1;
+          filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .cart-badge {
+          position: absolute;
+          top: -6px; 
+          right: -10px; 
+          background: #f97316;
+          color: #fff;
+          font-size: 0.7rem;
+          font-weight: bold;
+          border-radius: 50%;
+          width: 22px;
+          height: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+          z-index: 20; 
+          border: 2px solid #050508; 
+        }
+
+        .hamburger {
+          display: none;
+        }
+
+        /* === الموبايل === */
         @media (max-width: 900px) {
           .navbar {
-            padding: 10px 15px; /* مسافة أصغر */
+            padding: 10px 15px;
           }
 
           .logo-img {
-            height: 35px; /* تصغير اللوجو */
+            height: 35px;
           }
 
           .logo-text {
-            font-size: 1rem; /* تصغير النص */
-            display: none; /* إخفاء النص في الشاشات الصغيرة جداً لترك مساحة للسلة */
+            font-size: 1rem;
+            display: none;
           }
 
-          /* إظهار النص إذا كان هناك مساحة كافية */
           @media (min-width: 400px) {
             .logo-text { display: block; }
           }
@@ -530,9 +571,9 @@ const Navbar = () => {
             transform: scale(1.1);
           }
 
-          /* تصميم زر الدخول داخل القائمة */
+          /* إظهار قسم المصادقة في الموبايل */
           .mobile-only-auth {
-            display: flex; /* ظهر فقط في الموبايل */
+            display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
@@ -574,14 +615,13 @@ const Navbar = () => {
             border-radius: 8px;
           }
 
-          /* إخفاء المصادقة سطح المكتب في الموبايل */
           .desktop-only-auth {
             display: none !important;
           }
 
           .actions-container {
             gap: 15px;
-            margin-left: auto; /* دفع العناصر لليمين */
+            margin-left: auto;
           }
 
           .hamburger {
@@ -600,6 +640,14 @@ const Navbar = () => {
             transition: all 0.3s;
             border-radius: 2px;
           }
+
+          .line1 { transform: rotate(0deg); }
+          .line2 { opacity: 1; }
+          .line3 { transform: rotate(0deg); }
+
+          .line1.line1 { transform: rotate(45deg) translate(5px, 6px); }
+          .line2.line2 { opacity: 0; }
+          .line3.line3 { transform: rotate(-45deg) translate(5px, -6px); }
         }
       `}</style>
     </>
