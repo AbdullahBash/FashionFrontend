@@ -10,7 +10,6 @@ const Navbar = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  
   const [stars, setStars] = useState([]);
 
   const { cart } = useCart();
@@ -65,8 +64,6 @@ const Navbar = () => {
   };
 
   const cartItemCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-  
-  // === تصحيح الخطأ هنا ===
   const cartScale = cartItemCount > 0 ? 1 + (Math.min(cartItemCount, 20) / 40) : 1;
 
   const handleNavigation = (path) => {
@@ -77,45 +74,24 @@ const Navbar = () => {
 
   const logoUrl = API_BASE_URL.replace('/api', '') + '/images/NewLogo.png';
 
-  // === مكون التحكم بالموسيقى (بدون TypeScript assertions) ===
-  const MusicControl = () => {
-    const [isPlaying, setIsPlaying] = useState(false);
+  return (
+    <>
+      {/* عنصر الصوت */}
+      <audio id="bg-music" loop>
+        <source src="/music.mp3" type="audio/mp3" />
+      </audio>
 
-    useEffect(() => {
-      const audio = document.getElementById('bg-music');
-      if (audio) {
-        audio.volume = 0.3; 
-        audio.play().then(() => setIsPlaying(true)).catch(() => {
-          setIsPlaying(false);
-        });
-      }
-    }, []);
-
-    const toggleMusic = () => {
-      const audio = document.getElementById('bg-music');
-      if (!audio) return;
-      if (isPlaying) {
-        audio.pause();
-        setIsPlaying(false);
-      } else {
-        audio.play();
-        setIsPlaying(true);
-      }
-    };
-
-    return (
+      {/* زر التحكم بالموسيقى */}
       <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 10000 }}>
-        {/* عنصر الصوت المخفي */}
-        <audio id="bg-music" loop>
-          <source src="/music.mp3" type="audio/mp3" />
-        </audio>
-        
-        {/* زر التحكم */}
         <button 
-          onClick={toggleMusic}
+          onClick={() => {
+            const audio = document.getElementById('bg-music');
+            if (audio.paused) audio.play();
+            else audio.pause();
+          }}
           style={{
             backgroundColor: 'rgba(0,0,0,0.6)',
-            color: isPlaying ? '#f97316' : '#fff',
+            color: '#fff',
             border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: '50%',
             width: '45px',
@@ -129,20 +105,11 @@ const Navbar = () => {
             boxShadow: '0 0 10px rgba(0,0,0,0.5)'
           }}
         >
-          {isPlaying ? '🔊' : '🔇'}
+          🔊
         </button>
       </div>
-    );
-  };
-
-  return (
-    <>
-      {/* وضع مشغل الموسيقى هنا */}
-      <MusicControl />
 
       <nav className={`navbar ${isLoaded ? 'loaded' : ''} ${isScrolled ? 'scrolled' : ''}`}>
-        
-        {/* الخلفية الفضائية */}
         <div className="space-background">
           {stars.map((star, i) => (
             <div
@@ -161,7 +128,6 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* النيزك الطائر */}
         <div className="meteor-shooting">
              <div className="meteor-head"></div>
              <div className="meteor-tail"></div>
@@ -172,13 +138,11 @@ const Navbar = () => {
           <span className="logo-text">OUTCOLONY</span>
         </div>
 
-        {/* القائمة المنبثقة */}
         <div className={`links ${isMenuOpen ? 'active' : ''}`}>
           <a onClick={() => handleNavigation('/')} className="nav-link">Home</a>
           <a onClick={() => handleNavigation('/about')} className="nav-link">About</a>
           <a onClick={() => handleNavigation('/contact')} className="nav-link">Contact</a>
 
-          {/* قسم المصادقة للموبايل */}
           <div className="mobile-only-auth">
             {!user ? (
               <button onClick={() => handleNavigation('/login')} className="mobile-signin-btn">
@@ -200,7 +164,6 @@ const Navbar = () => {
 
         <div className="actions-container">
 
-          {/* قسم المصادقة للسطح المكتب */}
           <div className="desktop-only-auth">
             {!user ? (
               <button onClick={() => router.push('/login?redirect=/')} className="btn-signin">
@@ -248,7 +211,7 @@ const Navbar = () => {
         }
 
         .navbar {
-          position: sticky; /* سطح المكتب */
+          position: sticky;
           top: 0;
           z-index: 10000;
           display: flex;
@@ -302,7 +265,6 @@ const Navbar = () => {
           100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
         }
 
-        /* === النيزك === */
         .meteor-shooting {
             position: absolute;
             top: 0;
@@ -379,7 +341,6 @@ const Navbar = () => {
           white-space: nowrap;
         }
 
-        /* === روابط سطح المكتب === */
         .links {
           display: flex;
           gap: 40px;
@@ -454,7 +415,6 @@ const Navbar = () => {
           filter: brightness(1.2);
         }
 
-        /* قائمة المستخدم سطح المكتب */
         .user-dropdown-wrapper {
           position: relative;
         }
@@ -581,15 +541,16 @@ const Navbar = () => {
           display: none;
         }
 
-        /* === الموبايل: إصلاح الثبات (Fixed) === */
         @media (max-width: 900px) {
           .navbar {
-            /* إصلاح: تغيير sticky إلى fixed */
             position: fixed !important;
-            width: 100%;
-            top: 0;
-            left: 0;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            z-index: 99999 !important;
             padding: 10px 15px;
+            background: #050508 !important;
           }
 
           .logo-img {
@@ -600,6 +561,7 @@ const Navbar = () => {
             font-size: 0.9rem;
             display: block !important;
             letter-spacing: 1px;
+            white-space: nowrap;
           }
 
           .links {
@@ -608,15 +570,12 @@ const Navbar = () => {
             top: 0;
             width: 85%;
             height: 100vh;
-            
             background: rgba(5, 5, 8, 0.98);
             backdrop-filter: blur(25px);
-            
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 30px;
-
             transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
             z-index: 1050;
             border-left: 1px solid rgba(255,255,255,0.1);
