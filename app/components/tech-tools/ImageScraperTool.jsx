@@ -7,7 +7,7 @@ export default function ImageScraperTool() {
 
   return (
     <>
-      {/* 1. شكل المنتج (Product Card) */}
+  
       <div style={cardStyle}>
         <div style={iconContainerStyle}>
            <svg style={iconStyle} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@ export default function ImageScraperTool() {
         </div>
       </div>
 
-      {/* 2. النافذة المنبثقة (SaaS Interface Modal) */}
+  
       {isModalOpen && <ImageScraperModal onClose={() => setIsModalOpen(false)} />}
     </>
   );
@@ -53,7 +53,6 @@ function ImageScraperModal({ onClose }) {
     }
   };
 
-  // --- هذه الدالة هي التي تربط الواجهة بالباك إند (Python) ---
   const handleProcess = async (e) => {
     e.preventDefault();
     if (!file) return alert("Please select an Excel file");
@@ -72,11 +71,9 @@ function ImageScraperModal({ onClose }) {
       });
 
       if (response.ok) {
-        // استقبال الملف المضغوط (ZIP) من السيرفر
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         
-        // تحميل الملف تلقائياً
         const a = document.createElement('a');
         a.href = url;
         a.download = `scraped_images_${new Date().getTime()}.zip`;
@@ -113,7 +110,6 @@ function ImageScraperModal({ onClose }) {
             Select a plan to configure your scraping limits and processing options.
           </p>
 
-          {/* الباقات (Plans) */}
           <div style={plansGridStyle}>
             {[
               { id: 'free', name: 'Free Trial', price: 'Free', limit: '20 Items', features: ['1 Image / Item', 'Download Only'] },
@@ -142,7 +138,6 @@ function ImageScraperModal({ onClose }) {
             ))}
           </div>
 
-          {/* خيارات التشغيل */}
           <div style={optionsSectionStyle}>
             <h4 style={sectionTitleStyle}>Processing Options</h4>
             <div style={radioGroupStyle}>
@@ -169,7 +164,6 @@ function ImageScraperModal({ onClose }) {
             </div>
           </div>
 
-          {/* رفع الملف */}
           <div style={uploadSectionStyle}>
             <h4 style={sectionTitleStyle}>Upload Data</h4>
             <label style={fileInputWrapperStyle}>

@@ -79,6 +79,7 @@ const Navbar = () => {
     <>
       <nav className={`navbar ${isLoaded ? 'loaded' : ''} ${isScrolled ? 'scrolled' : ''}`}>
         
+        {/* الخلفية الفضائية */}
         <div className="space-background">
           {stars.map((star, i) => (
             <div
@@ -97,17 +98,18 @@ const Navbar = () => {
           ))}
         </div>
 
+        {/* النيزك الطائر (الجديد) */}
+        <div className="meteor-shooting">
+             <div className="meteor-head"></div>
+             <div className="meteor-tail"></div>
+        </div>
+
         <div className="logo-container" onClick={() => handleNavigation('/')}>
           <img src={logoUrl} alt="Logo" className="logo-img" />
           <span className="logo-text">OUTCOLONY</span>
-          
-          <div className="meteor-cinematic">
-             <div className="meteor-engine"></div>
-             <div className="meteor-core"></div>
-             <div className="meteor-glow"></div>
-          </div>
         </div>
 
+        {/* القائمة الجانبية للموبايل */}
         <div className={`links ${isMenuOpen ? 'active' : ''}`}>
           <a onClick={() => handleNavigation('/')} className="nav-link">Home</a>
           <a onClick={() => handleNavigation('/about')} className="nav-link">About</a>
@@ -123,13 +125,11 @@ const Navbar = () => {
               </button>
             ) : (
               <div className="user-dropdown-wrapper">
-                {/* التصميم الجديد للكبسولة */}
                 <div onClick={() => setShowUserMenu(!showUserMenu)} className="user-trigger">
                   <span className="user-name">{user.name}</span>
                   <span className={`arrow-icon ${showUserMenu ? 'rotate' : ''}`}>▼</span>
                 </div>
 
-                {/* التصميم الجديد للقائمة */}
                 <div className={`dropdown-menu ${showUserMenu ? 'show' : ''}`}>
                   <div onClick={() => handleNavigation('/my-orders')} className="dropdown-item">
                     My Orders
@@ -177,7 +177,7 @@ const Navbar = () => {
           backdrop-filter: blur(8px);
           border-bottom: 1px solid rgba(255,255,255,0.08);
 
-          overflow: visible; /* Changed to visible to allow dropdown to show */
+          overflow: visible;
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 
           opacity: 0;
@@ -217,13 +217,60 @@ const Navbar = () => {
           100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
         }
 
+        /* === النيزك الطائر === */
+        .meteor-shooting {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .meteor-head {
+            position: absolute;
+            top: 50%;
+            left: -50px; /* يبدأ من خارج الشاشة */
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px 5px #fff, 0 0 30px 10px orange;
+            animation: shootMeteor 2s linear infinite; /* كل ثانيتين */
+        }
+
+        .meteor-tail {
+            position: absolute;
+            top: 50%;
+            left: -200px;
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,69,0,0.6) 20%, rgba(255,200,0,0.9) 50%, #fff 100%);
+            transform: translateY(-50%) rotate(-45deg);
+            filter: blur(1px);
+            animation: shootMeteor 2s linear infinite;
+        }
+
+        @keyframes shootMeteor {
+            0% {
+                left: -10%;
+                opacity: 1;
+            }
+            100% {
+                left: 120%; /* يطير لطرف الشاشة */
+                opacity: 1;
+            }
+        }
+
         .logo-container {
           display: flex;
           align-items: center;
           gap: 12px;
           cursor: pointer;
           position: relative;
-          z-index: 10;
+          z-index: 20;
         }
 
         .logo-img {
@@ -245,67 +292,7 @@ const Navbar = () => {
           text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
-        .meteor-cinematic {
-          position: relative;
-          width: 110px; 
-          height: 12px; 
-          margin-left: 20px;
-          transform: rotate(0deg); 
-          display: flex;
-          align-items: center;
-          filter: drop-shadow(0 0 12px rgba(255, 100, 0, 0.6));
-        }
-
-        .meteor-core {
-          width: 12px;
-          height: 12px;
-          background: #fff;
-          border-radius: 50%;
-          position: absolute;
-          right: 0;
-          z-index: 3;
-          box-shadow: 
-            0 0 15px 3px #fff,
-            0 0 30px 8px orange;
-          animation: slowGlow 3s infinite alternate; 
-        }
-
-        .meteor-engine {
-          position: absolute;
-          right: 5px;
-          top: 2px;
-          width: 100%;
-          height: 8px;
-          background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,69,0,0.6) 20%, rgba(255,200,0,0.9) 50%, #fff 100%);
-          border-radius: 50px;
-          filter: blur(1px);
-          animation: idleBurn 2s infinite ease-in-out; 
-          mix-blend-mode: screen;
-        }
-
-        .meteor-glow {
-          position: absolute;
-          right: -15px;
-          top: -8px;
-          width: 50px;
-          height: 30px;
-          background: radial-gradient(circle, rgba(255,100,0,0.3) 0%, transparent 70%);
-          z-index: 1;
-          filter: blur(6px);
-          opacity: 0.6;
-        }
-
-        @keyframes idleBurn {
-          0% { transform: scaleY(0.9); opacity: 0.8; filter: blur(1px) brightness(1); }
-          50% { transform: scaleY(1.1); opacity: 1; filter: blur(2px) brightness(1.3); }
-          100% { transform: scaleY(0.9); opacity: 0.8; filter: blur(1px) brightness(1); }
-        }
-
-        @keyframes slowGlow {
-          from { box-shadow: 0 0 15px 3px #fff, 0 0 30px 8px orange; opacity: 0.9; }
-          to { box-shadow: 0 0 20px 5px #fff, 0 0 40px 10px orange; opacity: 1; }
-        }
-
+        /* === الروابط والقائمة === */
         .links {
           display: flex;
           gap: 40px;
@@ -350,6 +337,7 @@ const Navbar = () => {
           display: flex;
           gap: 25px;
           align-items: center;
+          z-index: 1100; /* فوق القائمة */
         }
 
         .btn-signin {
@@ -375,7 +363,6 @@ const Navbar = () => {
           filter: brightness(1.2);
         }
 
-        /* ✅ تنسيقات قائمة المستخدم الجديدة */
         .user-dropdown-wrapper {
           position: relative;
         }
@@ -386,7 +373,7 @@ const Navbar = () => {
           gap: 8px;
           cursor: pointer;
           padding: 8px 20px;
-          border: 1px solid rgba(255,255,255,0.2); /* حدود واضحة */
+          border: 1px solid rgba(255,255,255,0.2); 
           border-radius: 999px;
           color: #fff;
           transition: all 0.3s ease;
@@ -502,32 +489,61 @@ const Navbar = () => {
           display: none;
         }
 
+        /* === الموبايل: قائمة حديثة وعناصر واضحة === */
         @media (max-width: 900px) {
           .navbar {
             padding: 15px 20px;
           }
-          
-          .meteor-cinematic {
-            width: 70px;
+
+          .logo-img {
+            height: 40px;
           }
 
           .links {
             position: fixed;
             right: -100%;
             top: 0;
-            width: 80%;
+            width: 100%; /* تغطية الشاشة كاملة */
             height: 100vh;
-            background: #050508;
+            
+            /* تصميم حديث */
+            background: rgba(5, 5, 8, 0.98); /* لون داكن صلب لضمان قراءة النص */
+            backdrop-filter: blur(25px);
+            
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-            z-index: 999;
-            border-left: 1px solid rgba(255,255,255,0.1);
+            gap: 40px;
+
+            transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 1050; /* فوق النافبار الأساسي */
+            border-right: none;
           }
 
           .links.active {
             right: 0;
+            box-shadow: -10px 0 50px rgba(0,0,0,0.8);
+          }
+
+          /* روابط حديثة وكبيرة */
+          .nav-link {
+            font-size: 2.5rem; /* خط كبير جداً (Modern) */
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+          }
+
+          .nav-link:hover {
+            color: #f97316;
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+          }
+
+          .nav-link::after {
+            display: none; /* إخفاء الخط السفلي في الموبايل */
           }
 
           .hamburger {
@@ -535,7 +551,8 @@ const Navbar = () => {
             flex-direction: column;
             gap: 6px;
             cursor: pointer;
-            z-index: 1000;
+            z-index: 1150; /* فوق القائمة */
+            padding: 10px;
           }
 
           .line {
@@ -544,6 +561,33 @@ const Navbar = () => {
             background: #fff;
             transition: all 0.3s;
             border-radius: 2px;
+          }
+
+          .line1 { transform: rotate(0deg); }
+          .line2 { opacity: 1; }
+          .line3 { transform: rotate(0deg); }
+
+          .line1.line1 { transform: rotate(45deg) translate(5px, 6px); }
+          .line2.line2 { opacity: 0; }
+          .line3.line3 { transform: rotate(-45deg) translate(5px, -6px); }
+
+          .actions-container {
+            gap: 15px;
+          }
+
+          .btn-signin {
+            display: none; /* إخفاء زر الدخول في الهيدر، سنظهره في القائمة لو أردت، لكن هنا نخفيه لجعل القائمة نظيفة */
+          }
+          
+          .user-name {
+            display: none; /* إخفاء الاسم في الهيدر لعدم الازدحام */
+          }
+
+          .desktop-only-auth {
+             position: fixed;
+             top: 20px;
+             right: 20px;
+             z-index: 1150;
           }
         }
       `}</style>
