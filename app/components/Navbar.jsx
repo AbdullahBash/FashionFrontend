@@ -17,7 +17,7 @@ const Navbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true),100);
+    const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -65,7 +65,7 @@ const Navbar = () => {
   };
 
   const cartItemCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-  const cartScale = cartItemCount > 0 ?1 + (Math.min(cartItemCount, 20) / 40) :1;
+  const cartScale = cartItemCount > 0 ? 1 + (Math.min(cartItemCount, 20) / 40) : 1;
 
   const handleNavigation = (path) => {
     router.push(path);
@@ -98,7 +98,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* النيزك الطائر */}
+        {/* النيزك الطائر (ذيل أطول) */}
         <div className="meteor-shooting">
              <div className="meteor-head"></div>
              <div className="meteor-tail"></div>
@@ -109,13 +109,13 @@ const Navbar = () => {
           <span className="logo-text">OUTCOLONY</span>
         </div>
 
-        {/* القائمة المنبثقة + قسم المصادقة في الموبايل */}
+        {/* القائمة المنبثقة */}
         <div className={`links ${isMenuOpen ? 'active' : ''}`}>
           <a onClick={() => handleNavigation('/')} className="nav-link">Home</a>
           <a onClick={() => handleNavigation('/about')} className="nav-link">About</a>
           <a onClick={() => handleNavigation('/contact')} className="nav-link">Contact</a>
 
-          {/* قسم المصادقة للموبايل فقط (مخفي في سطح المكتب) */}
+          {/* قسم المصادقة للموبايل */}
           <div className="mobile-only-auth">
             {!user ? (
               <button onClick={() => handleNavigation('/login')} className="mobile-signin-btn">
@@ -124,6 +124,9 @@ const Navbar = () => {
             ) : (
               <div className="mobile-user-section">
                 <div className="mobile-user-name">{user.name}</div>
+                <div onClick={() => handleNavigation('/my-orders')} className="mobile-menu-item">
+                  My Orders
+                </div>
                 <div onClick={handleLogout} className="mobile-logout-btn">
                   Sign Out
                 </div>
@@ -134,7 +137,7 @@ const Navbar = () => {
 
         <div className="actions-container">
 
-          {/* قسم المصادقة للسطح المكتب فقط */}
+          {/* قسم المصادقة للسطح المكتب */}
           <div className="desktop-only-auth">
             {!user ? (
               <button onClick={() => router.push('/login?redirect=/')} className="btn-signin">
@@ -236,7 +239,7 @@ const Navbar = () => {
           100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
         }
 
-        /* === النيزك === */
+        /* === النيزك الطويل === */
         .meteor-shooting {
             position: absolute;
             top: 0;
@@ -263,8 +266,8 @@ const Navbar = () => {
         .meteor-tail {
             position: absolute;
             top: 50%;
-            left: -200px;
-            width: 200px;
+            left: -350px;
+            width: 350px;
             height: 2px;
             background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,69,0,0.6) 20%, rgba(255,200,0,0.9) 50%, #fff 100%);
             transform: translateY(-50%) rotate(-45deg);
@@ -310,6 +313,7 @@ const Navbar = () => {
           letter-spacing: 3px;
           font-size: 1.4rem;
           text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+          white-space: nowrap;
         }
 
         /* === روابط سطح المكتب === */
@@ -318,7 +322,6 @@ const Navbar = () => {
           gap: 40px;
         }
 
-        /* إخفاء قسم المصادقة الخاص بالموبايل على سطح المكتب */
         .mobile-only-auth {
             display: none;
         }
@@ -525,13 +528,11 @@ const Navbar = () => {
             height: 35px;
           }
 
+          /* اللوجو دائماً ظاهر */
           .logo-text {
-            font-size: 1rem;
-            display: none;
-          }
-
-          @media (min-width: 400px) {
-            .logo-text { display: block; }
+            font-size: 0.9rem;
+            display: block !important;
+            letter-spacing: 1px;
           }
 
           .links {
@@ -571,13 +572,18 @@ const Navbar = () => {
             transform: scale(1.1);
           }
 
-          /* إظهار قسم المصادقة في الموبايل */
+          .nav-link::after {
+            display: none;
+          }
+
+          /* إظهار قسم المصادقة */
           .mobile-only-auth {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
             width: 100%;
+            margin-top: 20px;
           }
 
           .mobile-signin-btn {
@@ -589,7 +595,6 @@ const Navbar = () => {
             font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
             box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
           }
 
@@ -598,12 +603,31 @@ const Navbar = () => {
             display: flex;
             flex-direction: column;
             gap: 15px;
+            width: 100%;
+            align-items: center;
           }
 
           .mobile-user-name {
             font-size: 1.2rem;
             color: #fff;
             margin-bottom: 10px;
+            font-weight: bold;
+          }
+
+          /* زر My Orders */
+          .mobile-menu-item {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            width: 80%;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.3s;
+          }
+
+          .mobile-menu-item:hover {
+            color: #f97316;
           }
 
           .mobile-logout-btn {
@@ -613,6 +637,7 @@ const Navbar = () => {
             border: 1px solid #ff6b6b;
             padding: 10px 30px;
             border-radius: 8px;
+            width: fit-content;
           }
 
           .desktop-only-auth {
