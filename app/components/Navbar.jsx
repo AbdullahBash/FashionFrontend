@@ -65,6 +65,8 @@ const Navbar = () => {
   };
 
   const cartItemCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  
+  // === تصحيح الخطأ هنا ===
   const cartScale = cartItemCount > 0 ? 1 + (Math.min(cartItemCount, 20) / 40) : 1;
 
   const handleNavigation = (path) => {
@@ -75,8 +77,69 @@ const Navbar = () => {
 
   const logoUrl = API_BASE_URL.replace('/api', '') + '/images/NewLogo.png';
 
+  // === مكون التحكم بالموسيقى (بدون TypeScript assertions) ===
+  const MusicControl = () => {
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    useEffect(() => {
+      const audio = document.getElementById('bg-music');
+      if (audio) {
+        audio.volume = 0.3; 
+        audio.play().then(() => setIsPlaying(true)).catch(() => {
+          setIsPlaying(false);
+        });
+      }
+    }, []);
+
+    const toggleMusic = () => {
+      const audio = document.getElementById('bg-music');
+      if (!audio) return;
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        audio.play();
+        setIsPlaying(true);
+      }
+    };
+
+    return (
+      <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 10000 }}>
+        {/* عنصر الصوت المخفي */}
+        <audio id="bg-music" loop>
+          <source src="/music.mp3" type="audio/mp3" />
+        </audio>
+        
+        {/* زر التحكم */}
+        <button 
+          onClick={toggleMusic}
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            color: isPlaying ? '#f97316' : '#fff',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%',
+            width: '45px',
+            height: '45px',
+            cursor: 'pointer',
+            fontSize: '1.2rem',
+            backdropFilter: 'blur(5px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+          }}
+        >
+          {isPlaying ? '🔊' : '🔇'}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <>
+      {/* وضع مشغل الموسيقى هنا */}
+      <MusicControl />
+
       <nav className={`navbar ${isLoaded ? 'loaded' : ''} ${isScrolled ? 'scrolled' : ''}`}>
         
         {/* الخلفية الفضائية */}
@@ -98,7 +161,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* النيزك الطائر (ذيل أطول) */}
+        {/* النيزك الطائر */}
         <div className="meteor-shooting">
              <div className="meteor-head"></div>
              <div className="meteor-tail"></div>
@@ -185,7 +248,7 @@ const Navbar = () => {
         }
 
         .navbar {
-          position: sticky;
+          position: sticky; /* سطح المكتب */
           top: 0;
           z-index: 10000;
           display: flex;
@@ -239,7 +302,7 @@ const Navbar = () => {
           100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
         }
 
-        /* === النيزك الطويل === */
+        /* === النيزك === */
         .meteor-shooting {
             position: absolute;
             top: 0;
@@ -518,9 +581,14 @@ const Navbar = () => {
           display: none;
         }
 
-        /* === الموبايل === */
+        /* === الموبايل: إصلاح الثبات (Fixed) === */
         @media (max-width: 900px) {
           .navbar {
+            /* إصلاح: تغيير sticky إلى fixed */
+            position: fixed !important;
+            width: 100%;
+            top: 0;
+            left: 0;
             padding: 10px 15px;
           }
 
@@ -528,7 +596,6 @@ const Navbar = () => {
             height: 35px;
           }
 
-          /* اللوجو دائماً ظاهر */
           .logo-text {
             font-size: 0.9rem;
             display: block !important;
@@ -576,7 +643,6 @@ const Navbar = () => {
             display: none;
           }
 
-          /* إظهار قسم المصادقة */
           .mobile-only-auth {
             display: flex;
             flex-direction: column;
@@ -614,7 +680,6 @@ const Navbar = () => {
             font-weight: bold;
           }
 
-          /* زر My Orders */
           .mobile-menu-item {
             color: #cbd5e1;
             font-size: 1.1rem;
